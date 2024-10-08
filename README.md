@@ -10,13 +10,12 @@ The code uses two cameras on the central drone to create a 3d map of features, t
 ### Feature detection
 To detect features, we use the [FAST algorithm](https://en.m.wikipedia.org/wiki/Features_from_accelerated_segment_test) to detect corners. Then, we calculate descriptors for each of these points that are scale and rotationally invariant and match the points to each other. 
 
-
-The descriptors used to match the points are 
+![IMG_0342](https://github.com/user-attachments/assets/c1dbc2a9-9376-4050-8348-33e8c13b3c36)
 
 ### Feature triangulation
 To find the 3d position of the features, we can draw a line in 3d space from the center of both cameras on the central drone and approximate the intersecting point in 3d space to find the feature’s position in 3d space. 
 
-[insert image here of viewrect and lines intersection]
+![IMG_0338](https://github.com/user-attachments/assets/155d5324-84ad-4f4a-ac01-163bd41491f1)
 
 ### Reverse triangulation
 To find the 3d position of a camera from any two features, we can use the same method as before, but instead of drawing from the center of both cameras, we anchor the lines on the feature points in 3d space and approximate the intersection to find our camera’s position. We do this for every set of two features and remove outliers to get our final position. 
@@ -38,9 +37,26 @@ The Raspberry Pis are used with Socket to connect to the computer and send over 
 The frames holding it all together are printed from [these .STL files](https://drive.google.com/drive/folders/1yhmFWAC9WZl5KNo4NMfis7nEZxAkWpuL?usp=sharing). I decided against implementing the project on real drones as I would have to make my own to avoid the high costs, they introduce many problems like pid tuning and make iterating take longer and more difficult. Plus, they wouldn’t add much to the project. 
 
 ### Accounting for orientation
-asdf
+To account for the orientation, we first need to find our orientation. For pitch and roll, I used an accelerometer, but finding yaw is a bit more difficult. 
+
+To find the yaw, we take any pair of matched features across two cameras, one from the central drone and another from the second drone. Then, we can use the offset in angle of the descriptors we used, such as the difference in direction of the vectors from the same descriptor, which we calculated during feature matching. This gives us the relative yaw of every drone with respect to the central drone.
+
+![IMG_0341](https://github.com/user-attachments/assets/39df52de-f7b4-403f-9299-5327c2b4be43)
+
+Accounting for yaw is not too hard, as we can rotate the images we captured from the cameras by the corresponding yaw angle before triangulating the points. 
+
+![IMG_0343](https://github.com/user-attachments/assets/0bb159db-b2b6-4b59-a8b0-30cbb77af94b)
+
+To account for pitch and roll on the central drone, after triangulating the 3d position of all the features, we can then rotate their positions around the origin in accordance with the pitch and yaw to properly account for the pitch and roll. 
+
+![IMG_0339 2](https://github.com/user-attachments/assets/a96d89de-5537-4f28-acab-3835c75d4b50)
+
+For the secondary drones, we can change the stored position of the features on the screen in accordance with the pitch and roll before triangulating the position of the camera. This effectively changes the slope of all the lines before determining their intersection point to properly account for the pitch and roll. 
+
+![IMG_0339](https://github.com/user-attachments/assets/f2a94501-4f21-4bb8-9b88-22ff890bd9f6)
 
 ## Results
-asdf
+Overall, the project seemed to work pretty well. Compared to other systems, it’s a bit slow and not the most accurate, and it also doesn’t have the greatest tolerance for orientation differences, but I still think it’s quite impressive for its simplicity and cost. 
 
-In the future, it could be possible to find the 3d position of more features from any 2 drones so that the range is not limited to the central drone. 
+
+In the future, it could be possible to find the 3d position of more features from any 2 drones so that the range is not limited to the central drone. The current system is also centralized, but it shouldn’t be too hard to fully decentralize it with stronger raspberry pi computers. 
