@@ -1,5 +1,7 @@
 Drone-relative-positioning
 ==============================
+Blog post: [https://matthew-bird.com/blogs/Drone-Rel-Pos.html](https://matthew-bird.com/blogs/Drone-Rel-Pos.html)
+
 ## Premise
 My plan for this project was to determine the relative positioning and orientation of two or more objects with cameras using minimal usage of external libraries. I was inspired to do this by drone shows in HK. 
 
