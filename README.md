@@ -13,7 +13,7 @@ My plan for this project was to determine the relative positioning and orientati
 The code uses two cameras on the central drone to create a 3d map of features, then the other drones do the reverse from any two points to determine its own position in this 3d map of points. 
 
 ### Feature detection
-To detect features, we use the [FAST algorithm](https://en.m.wikipedia.org/wiki/Features_from_accelerated_segment_test) to detect corners. However, to improve computation time, we also use some methods to remove ‘low quality’ key points. 
+To detect features, we use the [FAST algorithm](https://en.m.wikipedia.org/wiki/Features_from_accelerated_segment_test) to detect corners. To improve computation time, we also use some methods to remove ‘low quality’ key points. 
 
 The first method, inspired by the SIFT algorithm, is to cull any points that aren’t substantially darker or lighter than the neighborhood. The second method, also inspired by the SIFT algorithm, is to cull any edges, which the FAST algorithm is often susceptible to classifying as corners. We do this by taking three (angle) ranges around the key point centered on the orientation of the key point. For each range, we find the average difference in brightness of the points in the range and the key point. If the value calculated for the central range is too close to either of the outside ranges, then we consider it an edge and cull it. 
 
